@@ -11,7 +11,7 @@ import matplotlib.ticker as ticker
 # - nodes transmit packets whose start time has arrived (or past) if the
 #   channel isn't busy
 #
-# NOTE: In the simulator, time is slotted and increments 1 step at a time.  
+# NOTE: In the simulator, time is slotted and increments 1 step at a time.
 # Packet lengths are expressed in units of time slots.
 #
 
@@ -85,7 +85,7 @@ class WirelessNode:
         if self.dist == "exponential":
             # generate according to exponential interarrival
             r = random.random()
-            if r <= self.rate: 
+            if r <= self.rate:
                 self.add_packet(time)
                 return 1
             return 0
@@ -99,22 +99,22 @@ class WirelessNode:
         self.transmitting = True
         self.network.transmit(self,packet)
 
-    # Called by network when a packet transmission is complete.  
-    # collisions is true if there were collisions with other transmitters 
+    # Called by network when a packet transmission is complete.
+    # collisions is true if there were collisions with other transmitters
     # during transmission (ie, some other packet was sent at the same time)
     def transmit_done(self,packet):
         self.transmitting = False
         if packet.coll_flag == COLLISION:
             self.stats.collisions += 1
             # Note: For TDMA, don't remove packet (shd never happen)
-            if (self.retry == NO_RETRY and 
+            if (self.retry == NO_RETRY and
                 self.network.config.chantype != 'TDMA'):
                 self.transmit_queue.remove(packet)
             self.on_collision(packet)
         else:
             st = self.stats
             st.success = st.success + 1
-            st.latency = (1.0*(packet.end-packet.start) + 
+            st.latency = (1.0*(packet.end-packet.start) +
                           (st.success - 1) * st.latency)/st.success
             self.transmit_queue.remove(packet)
             self.on_xmit_success(packet)
@@ -139,11 +139,11 @@ class WirelessNode:
                                        self.network.config.numnodes):
                     # start xmitting first packet on queue in the next time slot
                     self.transmit_start(self.transmit_queue[0])
-        
+
         self.generate_packet(time+1) # try to generate packet in next timeslot
         return len(self.transmit_queue)
 
-    # Channel access routines depending on the type of the channel. 
+    # Channel access routines depending on the type of the channel.
     # This function is a wrapper around the funtions that do the actual
     # work.  Returns True if node can transmit in this time-slot and False
     # otherwise.
@@ -206,7 +206,7 @@ class WirelessNode:
 
     def OnClick(self,which):
         pass
-        
+
     # status report to appear in status bar when pointer is nearby
     def status(self):
         t = "Latency = %.1f " % self.stats.latency
@@ -222,7 +222,7 @@ class WirelessNode:
 ################################################################################
 #
 # WirelessNetConfig -- setting various configuration parameters
-# 
+#
 ################################################################################
 class WirelessNetConfig:
     def __init__(self,n,chantype,ptime,dist,load,retry,backoff,
@@ -263,7 +263,7 @@ class WirelessNetConfig:
 
     # called when user sets channel type
     def set_channel_type(self,t):
-        if t == '': t = "stabaloha" 
+        if t == '': t = "stabaloha"
         print 'set_protocol', t
         self.chantype = t
 
@@ -281,7 +281,7 @@ class WirelessNetConfig:
         if b == '': b = 'binexpo'
         print 'set_backoff ', b
         self.backoff = b
-        
+
     # called when user sets whether nodes should send at skewed or equal rates
     def set_skew(self,s):
         if s == 'Yes':
@@ -306,8 +306,8 @@ class WirelessNetConfig:
 # Provides the following methods, among others that may be less important
 # step() -- the "main body" of this class, which orchestrates what happens
 #           in each time step, including calling each node's step() method
-# collide() -- internal function used to determine if two or more packets 
-#              are concurrently on the channel.  If so, the packet's 
+# collide() -- internal function used to determine if two or more packets
+#              are concurrently on the channel.  If so, the packet's
 #              coll_flag field is set to COLLISION, if not, NO_COLLISION
 # channel_busy() -- Returns True if channel is currently busy, else False
 # print_stats() -- prints useful stats about the network and each node
@@ -331,7 +331,7 @@ class WirelessNetwork:
         self.max_y = 0
 
         for i in xrange(0,numnodes):
-            loc = (math.cos(2*math.pi*i/numnodes)+.3, 
+            loc = (math.cos(2*math.pi*i/numnodes)+.3,
                    math.sin(2*math.pi*i/numnodes)+1)
             n = self.add_node(loc)
 
@@ -368,7 +368,7 @@ class WirelessNetwork:
     def add_ap(self,ap):
         print 'adding ap'
         self.ap = ap
-    
+
     def make_node(self,loc,retry):
         return WirelessNode(loc,self,retry)
 
@@ -396,14 +396,14 @@ class WirelessNetwork:
         return [f(node) for node in self.nlist]
 
     # Simulate wireless network one time slot at a time.
-    # The ordering of steps here is important; we need to check for 
-    # collisions first to avoid edge case problems.  If you reorder things 
+    # The ordering of steps here is important; we need to check for
+    # collisions first to avoid edge case problems.  If you reorder things
     # below, you'd better know what you're doing!
     def step(self,count=1):
         stop_time = self.time + count
         while self.time < stop_time:
             # determine what's happening on channel
-            self.collide()            
+            self.collide()
             # wrap up any transmissions that just ended
             while len(self.channel) > 0 and self.channel[0].end <= self.time:
                 p = self.channel.pop(0)
@@ -449,9 +449,9 @@ class WirelessNetwork:
                 self.stats.collisions += 1
                 p.coll_flag = COLLISION
 
-    # called by nodes when they start transmitting a packet; 
-    # packets are identified by their original start time.  
-    # Nodes will expect a callback to their transmit_done method 
+    # called by nodes when they start transmitting a packet;
+    # packets are identified by their original start time.
+    # Nodes will expect a callback to their transmit_done method
     # after transmission completes.
     # channel is list of lists where each sublist has the form
     # [end_time,node,packet_id,collision_flag]
@@ -468,7 +468,7 @@ class WirelessNetwork:
 
     def channel_idle(self):
         return not self.channel_busy()
-    
+
     # print out useful stats about the WirelessNetwork and each WirelessNode
     def print_stats(self):
         for n in self.nlist:
@@ -476,11 +476,11 @@ class WirelessNetwork:
         self.stats._print(self.time, self.config.ptime, 'net')
         print "Inter-node fairness: %.2f" % self.fairness(0)
         print "Inter-node weighted fairness: %.2f" % self.fairness(1)
-        
+
     def fairness(self, rate_normalized):
         succ_sum = succ_sumsq = 0
         for n in self.nlist:
-            if rate_normalized == 0: 
+            if rate_normalized == 0:
                 x = n.stats.success
             else:
                 x = 1.0*n.stats.success/n.rate
@@ -528,9 +528,9 @@ class WirelessNetwork:
         statusbar.SetStatusText('Attempts: %d' % self.stats.attempts, 1)
         statusbar.SetStatusText('Success: %d' % self.stats.success, 2)
 #        statusbar.SetStatusText('Collisions: %d' % self.stats.collisions, 3)
-        if self.time > 0: 
+        if self.time > 0:
             u = 1.0*self.stats.success*self.config.ptime/self.time
-        else: 
+        else:
             u = 0.00
         statusbar.SetStatusText('Utilization: %.2f' % u, 3)
         statusbar.SetStatusText('Status: %s' % msg, 4)
@@ -580,7 +580,7 @@ def nearby(pt,end1,end2,distance):
             return False
         dx = pt[0] - xi;
         dy = pt[1] - (slope2*xi + intercept2)
-        return (dx*dx) + (dy*dy) <= distance*distance        
+        return (dx*dx) + (dy*dy) <= distance*distance
 
 # A panel that displays a network
 class NetPanel(wx.Panel):
@@ -635,7 +635,7 @@ class NetPanel(wx.Panel):
             self.DrawNetwork()
             self.Refresh(False)
             self.redraw = False
-            self.network.status(self.statusbar,(-10,-10))                
+            self.network.status(self.statusbar,(-10,-10))
 
         if self.playmode == True:
             self.redraw = True
@@ -651,7 +651,7 @@ class NetPanel(wx.Panel):
 
     def OnPaint(self,event):
         # just refresh the screen from our buffer
-        dc = wx.BufferedPaintDC(self,self.buffer)        
+        dc = wx.BufferedPaintDC(self,self.buffer)
 
     def OnReset(self,event):
         self.playmode = False
@@ -862,7 +862,7 @@ class NetFrame(wx.Frame):
         button = wx.Button(self,-1,'Reset')
         self.Bind(wx.EVT_BUTTON, self.netpanel.OnReset, button)
         hsizer.Add(button,1)
-        
+
         # stats button -- calls netpanel's OnStats
         button = wx.Button(self,-1,'Stats')
         self.Bind(wx.EVT_BUTTON, self.netpanel.OnStats, button)
@@ -923,7 +923,7 @@ class NetSim(wx.App):
         self.frame.SetNetwork(network)
 
 
-# Stuff about each packet in the simulator, to keep track of start and end 
+# Stuff about each packet in the simulator, to keep track of start and end
 # times, identity of sender, whether collision happened or not.
 class Packet:
     def __init__(self,starttime,sender,receiver=None,ptime=1):
@@ -959,7 +959,7 @@ class Stats:
 
     # _print() is a bit hacky.  we have one kind of Stats object that
     # we attach to both the network and each node.  The info we want printed
-    # depends on whether we're printing it from the network or a node.  When 
+    # depends on whether we're printing it from the network or a node.  When
     # it's a node, the "type" is the node ID, otherwise, it's 'net'
     def _print(self,time,ptime,type):
         if time == 0: u = 0

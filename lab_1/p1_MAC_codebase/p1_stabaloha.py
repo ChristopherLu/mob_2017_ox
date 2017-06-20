@@ -19,7 +19,7 @@ class AlohaNode(WirelessNode):
         self.p = self.network.pmax
 
     def channel_access(self,time,ptime,numnodes):
-        ## TODO: control channel access 
+        ## TODO: control channel access
         pass
 
     def on_collision(self,packet):
@@ -27,7 +27,7 @@ class AlohaNode(WirelessNode):
         self.coll.append(self.network.time)
 
         ## TODO: Decrease the probability
-        pass 
+        pass
 
     def on_xmit_success(self,packet):
         # for plots of success
@@ -54,25 +54,25 @@ class AlohaWirelessNetwork(WirelessNetwork):
 if __name__ == '__main__':
     random.seed(6172538) # For repeatability
     parser = OptionParser()
-    parser.add_option("-g", "--gui", action="store_true", dest="gui", 
+    parser.add_option("-g", "--gui", action="store_true", dest="gui",
                       default=False, help="show GUI")
-    parser.add_option("-n", "--numnodes", type="int", dest="numnodes", 
+    parser.add_option("-n", "--numnodes", type="int", dest="numnodes",
                       default=16, help="number of nodes")
-    parser.add_option("-t", "--simtime", type="int", dest="simtime", 
+    parser.add_option("-t", "--simtime", type="int", dest="simtime",
                       default=10000, help="simulation time")
-    parser.add_option("-b", "--backoff", dest="backoff", 
+    parser.add_option("-b", "--backoff", dest="backoff",
                       default='Mine', help="backoff scheme (Mine, None)")
-    parser.add_option("-s", "--size", type="int", dest="ptime", 
+    parser.add_option("-s", "--size", type="int", dest="ptime",
                       default=1, help="packet size (in time units)")
-    parser.add_option("-p", "--pmax", type="float", dest="pmax", 
-                      default=1.0, help="max probability of xmission")    
-    parser.add_option("-q", "--pmin", type="float", dest="pmin", 
-                      default=0.0, help="min probability of xmission")    
-    parser.add_option("-l", "--load", type="int", dest="load", 
+    parser.add_option("-p", "--pmax", type="float", dest="pmax",
+                      default=1.0, help="max probability of xmission")
+    parser.add_option("-q", "--pmin", type="float", dest="pmin",
+                      default=0.0, help="min probability of xmission")
+    parser.add_option("-l", "--load", type="int", dest="load",
                       default=100, help="total load % (in pkts/timeslot)")
-    parser.add_option("-r", "--retry", action="store_true", dest="retry", 
+    parser.add_option("-r", "--retry", action="store_true", dest="retry",
                       default=False, help="show GUI")
-    parser.add_option("-k", "--skew", action="store_true", dest="skew", 
+    parser.add_option("-k", "--skew", action="store_true", dest="skew",
                       default=False, help="skew source loads")
 
     (opt, args) = parser.parse_args()
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     wnet = AlohaWirelessNetwork(opt.numnodes,'Aloha',opt.ptime,
                                 'exponential',opt.load,opt.retry,opt.backoff,
                                 opt.skew,0,opt.pmax,opt.pmin,opt.simtime)
-    
+
     if opt.gui == True:
         sim = NetSim()
         sim.SetNetwork(wnet)

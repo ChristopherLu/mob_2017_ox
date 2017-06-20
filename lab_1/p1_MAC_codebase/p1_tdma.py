@@ -37,19 +37,19 @@ class TDMAWirelessNetwork(WirelessNetwork):
 if __name__ == '__main__':
     random.seed(6172538) # uncomment this line for repeatability
     parser = OptionParser()
-    parser.add_option("-g", "--gui", action="store_true", dest="gui", 
+    parser.add_option("-g", "--gui", action="store_true", dest="gui",
                       default=False, help="show GUI")
-    parser.add_option("-n", "--numnodes", type="int", dest="numnodes", 
+    parser.add_option("-n", "--numnodes", type="int", dest="numnodes",
                       default=16, help="number of nodes")
-    parser.add_option("-t", "--simtime", type="int", dest="simtime", 
+    parser.add_option("-t", "--simtime", type="int", dest="simtime",
                       default=10000, help="simulation time")
-    parser.add_option("-s", "--size", type="int", dest="ptime", 
+    parser.add_option("-s", "--size", type="int", dest="ptime",
                       default=1, help="packet size (in time units)")
-    parser.add_option("-l", "--load", type="int", dest="load", 
+    parser.add_option("-l", "--load", type="int", dest="load",
                       default=100, help="total load % (in pkts/timeslot)")
-    parser.add_option("-r", "--retry", action="store_true", dest="retry", 
+    parser.add_option("-r", "--retry", action="store_true", dest="retry",
                       default=False, help="show GUI")
-    parser.add_option("-k", "--skew", action="store_true", dest="skew", 
+    parser.add_option("-k", "--skew", action="store_true", dest="skew",
                       default=False, help="skew source loads")
 
     (opt, args) = parser.parse_args()
@@ -57,7 +57,7 @@ if __name__ == '__main__':
     wnet = TDMAWirelessNetwork(opt.numnodes,'TDMA',opt.ptime,
                                'exponential',opt.load,opt.retry,'None',
                                opt.skew,0,opt.simtime)
-    
+
     if opt.gui == True:
         sim = NetSim()
         sim.SetNetwork(wnet)
@@ -67,7 +67,7 @@ if __name__ == '__main__':
         succ = []
         for node in wnet.nlist: succ.append(node.stats.success)
         for node in wnet.nlist:
-            if node.stats.collisions > 0: 
+            if node.stats.collisions > 0:
                 print "ERROR! TDMA should not have collisions"
         ind = numpy.arange(len(wnet.nlist))
         width = 0.35
