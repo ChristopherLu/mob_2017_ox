@@ -8,29 +8,29 @@ import matplotlib.pyplot as p
 ###############################################################
 
 class TDMANode(WirelessNode):
-    def __init__(self,location,network,retry):
-        WirelessNode.__init__(self,location,network,retry)
+    def __init__(self, location, network, retry):
+        WirelessNode.__init__(self, location, network, retry)
         # any additional state or variables may be set here
 
-    def channel_access(self,time,ptime,numnodes):
+    def channel_access(self, time, ptime, numnodes):
         ## TODO: control channel access
         pass
 
-    def on_collision(self,packet):
+    def on_collision(self, packet):
         pass
 
-    def on_xmit_success(self,packet):
+    def on_xmit_success(self, packet):
         pass
 
 ################################################################
 
 class TDMAWirelessNetwork(WirelessNetwork):
-    def __init__(self,n,chantype,ptime,dist,load,retry,backoff,
-                 skew=SOURCE_NOSKEW,qmax=0,simtime=10000):
-        WirelessNetwork.__init__(self,n,chantype,ptime,dist,load,retry,backoff,
-                                 skew,qmax,simtime)
-    def make_node(self,loc,retry):
-        return TDMANode(loc,self,retry)
+    def __init__(self, n, chantype, ptime, dist, load, retry, backoff,
+                 skew=SOURCE_NOSKEW, qmax=0, simtime=10000):
+        WirelessNetwork.__init__(self, n, chantype, ptime, dist, load, retry, backoff,
+                                 skew, qmax, simtime)
+    def make_node(self, loc, retry):
+        return TDMANode(loc, self, retry)
 
 ################################################################
 
@@ -54,9 +54,9 @@ if __name__ == '__main__':
 
     (opt, args) = parser.parse_args()
     print 'Protocol: TDMA'
-    wnet = TDMAWirelessNetwork(opt.numnodes,'TDMA',opt.ptime,
-                               'exponential',opt.load,opt.retry,'None',
-                               opt.skew,0,opt.simtime)
+    wnet = TDMAWirelessNetwork(opt.numnodes, 'TDMA', opt.ptime,
+                               'exponential', opt.load, opt.retry, 'None',
+                               opt.skew, 0, opt.simtime)
 
     if opt.gui == True:
         sim = NetSim()

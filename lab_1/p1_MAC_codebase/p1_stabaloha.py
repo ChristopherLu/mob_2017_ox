@@ -8,8 +8,8 @@ import matplotlib.pyplot as p
 ###############################################################
 
 class AlohaNode(WirelessNode):
-    def __init__(self,location,network,retry):
-        WirelessNode.__init__(self,location,network,retry)
+    def __init__(self, location, network, retry):
+        WirelessNode.__init__(self, location, network, retry)
 
         # for plots of collisions/success
         self.sent = []
@@ -18,18 +18,18 @@ class AlohaNode(WirelessNode):
         # initialize local probability of transmission
         self.p = self.network.pmax
 
-    def channel_access(self,time,ptime,numnodes):
+    def channel_access(self, time, ptime, numnodes):
         ## TODO: control channel access
         pass
 
-    def on_collision(self,packet):
+    def on_collision(self, packet):
         # for plots of collisions
         self.coll.append(self.network.time)
 
         ## TODO: Decrease the probability
         pass
 
-    def on_xmit_success(self,packet):
+    def on_xmit_success(self, packet):
         # for plots of success
         self.sent.append(self.network.time)
 
@@ -39,15 +39,15 @@ class AlohaNode(WirelessNode):
 ################################################################
 
 class AlohaWirelessNetwork(WirelessNetwork):
-    def __init__(self,n,chantype,ptime,dist,load,retry,backoff,
-                 skew,qmax,pmax,pmin,simtime):
+    def __init__(self, n, chantype, ptime, dist, load, retry, backoff,
+                 skew, qmax, pmax, pmin, simtime):
         self.pmax = pmax
         self.pmin = pmin
-        WirelessNetwork.__init__(self,n,chantype,ptime,dist,load,retry,backoff,
-                                 skew,qmax,simtime)
+        WirelessNetwork.__init__(self, n, chantype, ptime, dist, load, retry, backoff,
+                                 skew, qmax, simtime)
 
-    def make_node(self,loc,retry):
-        return AlohaNode(loc,self,retry)
+    def make_node(self, loc, retry):
+        return AlohaNode(loc, self, retry)
 
 ################################################################
 
@@ -77,9 +77,9 @@ if __name__ == '__main__':
 
     (opt, args) = parser.parse_args()
     print 'Protocol: Aloha with stabilization'
-    wnet = AlohaWirelessNetwork(opt.numnodes,'Aloha',opt.ptime,
-                                'exponential',opt.load,opt.retry,opt.backoff,
-                                opt.skew,0,opt.pmax,opt.pmin,opt.simtime)
+    wnet = AlohaWirelessNetwork(opt.numnodes, 'Aloha', opt.ptime,
+                                'exponential', opt.load, opt.retry, opt.backoff,
+                                opt.skew, 0, opt.pmax, opt.pmin, opt.simtime)
 
     if opt.gui == True:
         sim = NetSim()

@@ -8,8 +8,8 @@ import matplotlib.pyplot as p
 ###############################################################
 
 class CSMANode(WirelessNode):
-    def __init__(self,location,network,retry):
-        WirelessNode.__init__(self,location,network,retry)
+    def __init__(self, location, network, retry):
+        WirelessNode.__init__(self, location, network, retry)
 
         # for plots of collisions/success
         self.sent = []
@@ -18,20 +18,20 @@ class CSMANode(WirelessNode):
         # initialize local probability of transmission
         self.p = self.network.pmax
 
-    def channel_access(self,time,ptime,numnodes):
+    def channel_access(self, time, ptime, numnodes):
         ## TODO: decide whehter to transmit
         ## You can tell if the channel is busy or not using
         ## the self.network.channel_busy() function call.
         pass
 
-    def on_collision(self,packet):
+    def on_collision(self, packet):
         # for plots of collisions
         self.coll.append(self.network.time)
 
         ## TODO:Decrease the probability
         pass
 
-    def on_xmit_success(self,packet):
+    def on_xmit_success(self, packet):
         # for plots of successful transmissions
         self.sent.append(self.network.time)
 
@@ -41,15 +41,15 @@ class CSMANode(WirelessNode):
 ################################################################
 
 class CSMAWirelessNetwork(WirelessNetwork):
-    def __init__(self,n,chantype,ptime,dist,load,retry,backoff,
-                 skew,qmax,pmax,pmin,simtime):
+    def __init__(self, n, chantype, ptime, dist, load, retry, backoff,
+                 skew, qmax, pmax, pmin, simtime):
         self.pmax = pmax
         self.pmin = pmin
-        WirelessNetwork.__init__(self,n,chantype,ptime,dist,load,retry,backoff,
-                                 skew,qmax,simtime)
+        WirelessNetwork.__init__(self, n, chantype, ptime, dist, load, retry, backoff,
+                                 skew, qmax, simtime)
 
-    def make_node(self,loc,retry):
-        return CSMANode(loc,self,retry)
+    def make_node(self, loc, retry):
+        return CSMANode(loc, self, retry)
 
 ################################################################
 
@@ -79,9 +79,9 @@ if __name__ == '__main__':
 
     (opt, args) = parser.parse_args()
     print 'Protocol: CSMA with stabilization'
-    wnet = CSMAWirelessNetwork(opt.numnodes,'CSMA',opt.ptime,
-                               'exponential',opt.load,opt.retry,opt.backoff,
-                               opt.skew,0,opt.pmax,opt.pmin,opt.simtime)
+    wnet = CSMAWirelessNetwork(opt.numnodes, 'CSMA', opt.ptime,
+                               'exponential', opt.load, opt.retry, opt.backoff,
+                               opt.skew, 0, opt.pmax, opt.pmin, opt.simtime)
 
     if opt.gui == True:
         sim = NetSim()
