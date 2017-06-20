@@ -26,7 +26,7 @@ class TDMANode(WirelessNode):
 
 class TDMAWirelessNetwork(WirelessNetwork):
     def __init__(self,n,chantype,ptime,dist,load,retry,backoff,
-		 skew=SOURCE_NOSKEW,qmax=0,simtime=10000):
+                 skew=SOURCE_NOSKEW,qmax=0,simtime=10000):
         WirelessNetwork.__init__(self,n,chantype,ptime,dist,load,retry,backoff,
                                  skew,qmax,simtime)
     def make_node(self,loc,retry):

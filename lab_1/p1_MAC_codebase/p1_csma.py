@@ -42,7 +42,7 @@ class CSMANode(WirelessNode):
 
 class CSMAWirelessNetwork(WirelessNetwork):
     def __init__(self,n,chantype,ptime,dist,load,retry,backoff,
-		 skew,qmax,pmax,pmin,simtime):
+                 skew,qmax,pmax,pmin,simtime):
         self.pmax = pmax
         self.pmin = pmin        
         WirelessNetwork.__init__(self,n,chantype,ptime,dist,load,retry,backoff,

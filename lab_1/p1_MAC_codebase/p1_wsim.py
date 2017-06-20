@@ -16,12 +16,12 @@ import matplotlib.ticker as ticker
 #
 
 #defines
-NO_COLLISION = 0		# packet experienced no collision
-COLLISION = 1			# packet experienced collision
-NO_RETRY = 0			# config option: no retries
-RETRY = 1			# retry on
-SOURCE_NOSKEW = 0		# all nodes contribute roughly equal load
-SOURCE_SKEW = 1			# nodes contribute geometrically-spaced loads
+NO_COLLISION = 0                # packet experienced no collision
+COLLISION = 1                   # packet experienced collision
+NO_RETRY = 0                    # config option: no retries
+RETRY = 1                       # retry on
+SOURCE_NOSKEW = 0               # all nodes contribute roughly equal load
+SOURCE_SKEW = 1                 # nodes contribute geometrically-spaced loads
 
 ################################################################################
 #
@@ -32,9 +32,9 @@ SOURCE_SKEW = 1			# nodes contribute geometrically-spaced loads
 class WirelessNode:
     def __init__(self,location,network,retry):
         self.location = location
-        self.network = network	# our WirelessNetwork object
-	self.retry = retry	# retry packets (forever) or not?
-	self.stats = Stats(network.config.simtime)
+        self.network = network  # our WirelessNetwork object
+        self.retry = retry      # retry packets (forever) or not?
+        self.stats = Stats(network.config.simtime)
         self.reset()
 
     def __repr__(self):
@@ -46,7 +46,7 @@ class WirelessNode:
         self.transmitting = False
         self.rate = 0
         self.qmax = self.network.config.qmax
-        self.nsize = 0		# filled in by draw method
+        self.nsize = 0          # filled in by draw method
         self.sent = []          # times at which we sent successfully
         self.coll = []          # times at which we collided
         self.stats.reset(self.network.config.simtime)
@@ -54,10 +54,10 @@ class WirelessNode:
     # Get the unique ID for the node; it's a number between 0 and numnodes-1,
     # where numnodes is the number of nodes in the broadcast network
     def get_id(self):
-	i = 0
-	for n in self.network.nlist:
-	    if n == self: return i
-	    i = i+1
+        i = 0
+        for n in self.network.nlist:
+            if n == self: return i
+            i = i+1
         return 'error'
 
     # Add a packet start time to be transmitted from this node.  Transmit queue
@@ -66,7 +66,7 @@ class WirelessNode:
         if (self.qmax > 0 and len(self.transmit_queue) == self.qmax):
             print 'q full (max = %d)' % self.qmax
             return
-	p = Packet(start,self,ptime=self.network.config.ptime)
+        p = Packet(start,self,ptime=self.network.config.ptime)
         index = 0
         for pp in self.transmit_queue:
             if start < pp.start:
@@ -77,25 +77,25 @@ class WirelessNode:
 
     # Attach a random process to the node to generate packets
     def attach_distribution(self,dist,rate):
-	self.dist = dist
-	self.rate = rate
+        self.dist = dist
+        self.rate = rate
 
     # Do the actual work to generate packets
     def generate_packet(self,time):
-	if self.dist == "exponential":
-	    # generate according to exponential interarrival
-	    r = random.random()
-	    if r <= self.rate: 
-		self.add_packet(time)
-		return 1
-	    return 0
+        if self.dist == "exponential":
+            # generate according to exponential interarrival
+            r = random.random()
+            if r <= self.rate: 
+                self.add_packet(time)
+                return 1
+            return 0
 
     # Initiate transmission of a packet
     def transmit_start(self,packet):
         # start transmitting a packet, eventually self.transmit_done(start,...)
         # will be called by the network
         self.stats.attempts += 1
-	self.network.stats.attempts += 1
+        self.network.stats.attempts += 1
         self.transmitting = True
         self.network.transmit(self,packet)
 
@@ -106,17 +106,17 @@ class WirelessNode:
         self.transmitting = False
         if packet.coll_flag == COLLISION:
             self.stats.collisions += 1
-	    # Note: For TDMA, don't remove packet (shd never happen)
-	    if (self.retry == NO_RETRY and 
-		self.network.config.chantype != 'TDMA'):
-		self.transmit_queue.remove(packet)
+            # Note: For TDMA, don't remove packet (shd never happen)
+            if (self.retry == NO_RETRY and 
+                self.network.config.chantype != 'TDMA'):
+                self.transmit_queue.remove(packet)
             self.on_collision(packet)
-	else:
-	    st = self.stats
-	    st.success = st.success + 1
-	    st.latency = (1.0*(packet.end-packet.start) + 
-			  (st.success - 1) * st.latency)/st.success
-	    self.transmit_queue.remove(packet)
+        else:
+            st = self.stats
+            st.success = st.success + 1
+            st.latency = (1.0*(packet.end-packet.start) + 
+                          (st.success - 1) * st.latency)/st.success
+            self.transmit_queue.remove(packet)
             self.on_xmit_success(packet)
 
     def on_xmit_success(self,packet):
@@ -139,8 +139,8 @@ class WirelessNode:
                                        self.network.config.numnodes):
                     # start xmitting first packet on queue in the next time slot
                     self.transmit_start(self.transmit_queue[0])
-	
-	self.generate_packet(time+1) # try to generate packet in next timeslot
+        
+        self.generate_packet(time+1) # try to generate packet in next timeslot
         return len(self.transmit_queue)
 
     # Channel access routines depending on the type of the channel. 
@@ -171,7 +171,7 @@ class WirelessNode:
 
         label = str('A=%d,S=%d,Q=%d' %
                     (self.stats.attempts,self.stats.success,
-		     len(self.transmit_queue)))
+                     len(self.transmit_queue)))
 #        dc.SetTextForeground('dark grey')
         dc.SetTextForeground('black')
 #        dc.SetFont(wx.Font(max(4,2*self.nsize),wx.SWISS,wx.NORMAL,wx.NORMAL))
@@ -209,15 +209,15 @@ class WirelessNode:
         
     # status report to appear in status bar when pointer is nearby
     def status(self):
-	t = "Latency = %.1f " % self.stats.latency
-	u = "Numbackoffs %d " % self.stats.numbackoffs
-	t = str(t) + str(u) + "Q: "
+        t = "Latency = %.1f " % self.stats.latency
+        u = "Numbackoffs %d " % self.stats.numbackoffs
+        t = str(t) + str(u) + "Q: "
         t = t + str(len(self.transmit_queue)) + " ["
-	for p in self.transmit_queue:
-	    t = t + str(p.start) + " "
-	t = t + "]"
+        for p in self.transmit_queue:
+            t = t + str(p.start) + " "
+        t = t + "]"
 #        t = t + " DownRecd %d" % self.stats.downrecd
-	return t
+        return t
 
 ################################################################################
 #
@@ -226,25 +226,25 @@ class WirelessNode:
 ################################################################################
 class WirelessNetConfig:
     def __init__(self,n,chantype,ptime,dist,load,retry,backoff,
-		 skew=SOURCE_NOSKEW,qmax=0,simtime=10000):
-	self.numnodes = n	 # number of nodes sharing channel (integer)
-	self.chantype = chantype # channel type: stabaloha, CSMA, TDMA (string)
-	self.ptime = ptime	# packet length in time-slot units (integer)
-	self.dist = dist	# distribution to generate pkts (string)
-	self.load = load	# total offered load (integer percentage)
-	self.retry = retry	# does a node retry or not?  (RETRY or NO_RETRY)
-	self.maxbackoff = 16	# constant specifying max number of backoffs
-	self.backoff = backoff	# "None", "binexpo" or "Mine"
-	self.skew = skew	# NOSKEW for uniform load; else geom-spaced
+                 skew=SOURCE_NOSKEW,qmax=0,simtime=10000):
+        self.numnodes = n        # number of nodes sharing channel (integer)
+        self.chantype = chantype # channel type: stabaloha, CSMA, TDMA (string)
+        self.ptime = ptime      # packet length in time-slot units (integer)
+        self.dist = dist        # distribution to generate pkts (string)
+        self.load = load        # total offered load (integer percentage)
+        self.retry = retry      # does a node retry or not?  (RETRY or NO_RETRY)
+        self.maxbackoff = 16    # constant specifying max number of backoffs
+        self.backoff = backoff  # "None", "binexpo" or "Mine"
+        self.skew = skew        # NOSKEW for uniform load; else geom-spaced
         self.qmax = qmax        # max per-node queue size (0 for NO LIMIT)
         self.playstep = 1.0     # 1 second playstep by default
-	self.simtime = simtime	# total simulation time (integer)
+        self.simtime = simtime  # total simulation time (integer)
         self.downlink = 'FIFO'
 
     # called when user sets number of network nodes
     def set_nodes(self,n):
         print 'set_nodes', n
-	self.numnodes = n
+        self.numnodes = n
 
     # called when user sets packet time
     def set_packet_time(self,ptime):
@@ -253,41 +253,41 @@ class WirelessNetConfig:
 
     # called when user sets total channel load
     def set_load(self,load):
-	print 'set_load', load
-	self.load = load
+        print 'set_load', load
+        self.load = load
 
     # called when user sets total simulation time (number of time slots)
     def set_sim_time(self,t):
-	self.simtime = t
-	print 'set_simtime', t
+        self.simtime = t
+        print 'set_simtime', t
 
     # called when user sets channel type
     def set_channel_type(self,t):
-	if t == '': t = "stabaloha" 
+        if t == '': t = "stabaloha" 
         print 'set_protocol', t
         self.chantype = t
 
     # called when user sets whether nodes should retry on collision or not
     def set_retry(self,r):
-	if r == 'Yes':
+        if r == 'Yes':
             print 'set_retry', RETRY
             self.retry = RETRY
-	else: 			# no retry by default
+        else:                   # no retry by default
             print 'set_retry', NO_RETRY
             self.retry = NO_RETRY
 
     # what kind of backoff protocol do we want?
     def set_backoff(self,b):
-	if b == '': b = 'binexpo'
-	print 'set_backoff ', b
-	self.backoff = b
-	
+        if b == '': b = 'binexpo'
+        print 'set_backoff ', b
+        self.backoff = b
+        
     # called when user sets whether nodes should send at skewed or equal rates
     def set_skew(self,s):
-	if s == 'Yes':
+        if s == 'Yes':
             print 'set_src_skew SOURCE_SKEW'
             self.skew = SOURCE_SKEW
-	else: 			# default is NOSKEW
+        else:                   # default is NOSKEW
             print 'set_src_skew SOURCE_NOSKEW'
             self.skew = SOURCE_NOSKEW
 
@@ -315,52 +315,52 @@ class WirelessNetConfig:
 ################################################################################
 class WirelessNetwork:
     def __init__(self,n,chantype,ptime,dist,load,retry,backoff,
-		 skew=SOURCE_NOSKEW,qmax=0,simtime=10000):
-	self.config = WirelessNetConfig(n,chantype,ptime,dist,load,retry,
-					backoff,skew,qmax,simtime)
-	self.stats = Stats(simtime)
+                 skew=SOURCE_NOSKEW,qmax=0,simtime=10000):
+        self.config = WirelessNetConfig(n,chantype,ptime,dist,load,retry,
+                                        backoff,skew,qmax,simtime)
+        self.stats = Stats(simtime)
         self.ap = None
-	self.reset()
+        self.reset()
 
     # return network to initial state
     def reset(self):
-	numnodes = self.config.numnodes
+        numnodes = self.config.numnodes
         self.nodes = {}  # indexed by location tuple (x,y)
         self.nlist = []  # equivalent to self.nodes.values()
         self.max_x = 0
         self.max_y = 0
 
-	for i in xrange(0,numnodes):
-	    loc = (math.cos(2*math.pi*i/numnodes)+.3, 
-		   math.sin(2*math.pi*i/numnodes)+1)
-	    n = self.add_node(loc)
+        for i in xrange(0,numnodes):
+            loc = (math.cos(2*math.pi*i/numnodes)+.3, 
+                   math.sin(2*math.pi*i/numnodes)+1)
+            n = self.add_node(loc)
 
         for n in self.nlist: n.reset()
 
-	# Attach a source traffic distribution w/ the specified rate.
-	# By default, each node has uniform rate; override for skewed dists
-	load = self.config.load/100.0	# XXX because we're inputting a % load
-	load = load/self.config.ptime # load was in pkts/tslot
+        # Attach a source traffic distribution w/ the specified rate.
+        # By default, each node has uniform rate; override for skewed dists
+        load = self.config.load/100.0   # XXX because we're inputting a % load
+        load = load/self.config.ptime # load was in pkts/tslot
 
-	dist = self.config.dist
-	skew = self.config.skew
-	nextrate = load/2.0   # only relevant when skew == SOURCE_SKEW
-	for n in self.nlist:
-	    if (skew != SOURCE_SKEW):
-#		print 'attaching ', 1.0*load/numnodes, ' to node ', n.get_id()
-		n.attach_distribution(dist,load/numnodes)
+        dist = self.config.dist
+        skew = self.config.skew
+        nextrate = load/2.0   # only relevant when skew == SOURCE_SKEW
+        for n in self.nlist:
+            if (skew != SOURCE_SKEW):
+#               print 'attaching ', 1.0*load/numnodes, ' to node ', n.get_id()
+                n.attach_distribution(dist,load/numnodes)
                 n.rate = load/numnodes
-	    else:		# geometrically-spaced rates
-		if n == self.nlist[len(self.nlist)-1]:
-		    nextrate = 2.0*nextrate
-		print 'attaching ', nextrate, ' to node ', n.get_id()
+            else:               # geometrically-spaced rates
+                if n == self.nlist[len(self.nlist)-1]:
+                    nextrate = 2.0*nextrate
+                print 'attaching ', nextrate, ' to node ', n.get_id()
                 n.rate = nextrate
-		n.attach_distribution(dist,nextrate)
-		nextrate = nextrate/2.0;
+                n.attach_distribution(dist,nextrate)
+                nextrate = nextrate/2.0;
 
         self.time = 0
         self.channel = []
-	self.stats.reset(self.config.simtime) # clears all statistics
+        self.stats.reset(self.config.simtime) # clears all statistics
         if self.ap is not None:
             self.ap.reset()
 
@@ -408,9 +408,9 @@ class WirelessNetwork:
             while len(self.channel) > 0 and self.channel[0].end <= self.time:
                 p = self.channel.pop(0)
                 # invoke node's callback when packet finishes transmitting
-		p.sender.transmit_done(p)
-		if p.coll_flag == NO_COLLISION:
-		    self.stats.success += 1
+                p.sender.transmit_done(p)
+                if p.coll_flag == NO_COLLISION:
+                    self.stats.success += 1
 
             # see who wants to start transmitting in the next time slot
             self.new_transmissions = []
@@ -424,9 +424,9 @@ class WirelessNetwork:
 
             ##### end of time slot ######
 
-	    # end simulation if we reach ending time (simtime)
-	    if self.time == self.config.simtime:
-		break
+            # end simulation if we reach ending time (simtime)
+            if self.time == self.config.simtime:
+                break
 
             self.time += 1
 
@@ -435,8 +435,8 @@ class WirelessNetwork:
             # start up new transmissions
             self.channel.extend(self.new_transmissions)
 
-	if self.time >= self.config.simtime:
-	    self.print_stats()
+        if self.time >= self.config.simtime:
+            self.print_stats()
 
     # called in "middle" of each time slot to determine what's
     # happening in the channel, ie, are there collisions?
@@ -445,8 +445,8 @@ class WirelessNetwork:
         # if there's more than one active transmission, set collision flags
         # for any packets now being transmitted
         if len(self.channel) > 1:
-	    for p in self.channel:
-		self.stats.collisions += 1
+            for p in self.channel:
+                self.stats.collisions += 1
                 p.coll_flag = COLLISION
 
     # called by nodes when they start transmitting a packet; 
@@ -457,8 +457,8 @@ class WirelessNetwork:
     # [end_time,node,packet_id,collision_flag]
     # channel is a list of packets
     def transmit(self,node,packet):
-	packet.end = self.time+self.config.ptime
-	packet.coll_flag = NO_COLLISION
+        packet.end = self.time+self.config.ptime
+        packet.coll_flag = NO_COLLISION
         self.new_transmissions.append(packet)
 
     # Return True if channel is busy (ie, some node is currently transmitting),
@@ -471,9 +471,9 @@ class WirelessNetwork:
     
     # print out useful stats about the WirelessNetwork and each WirelessNode
     def print_stats(self):
-	for n in self.nlist:
-	    n.stats._print(self.time, self.config.ptime, n.get_id())
-	self.stats._print(self.time, self.config.ptime, 'net')
+        for n in self.nlist:
+            n.stats._print(self.time, self.config.ptime, n.get_id())
+        self.stats._print(self.time, self.config.ptime, 'net')
         print "Inter-node fairness: %.2f" % self.fairness(0)
         print "Inter-node weighted fairness: %.2f" % self.fairness(1)
         
@@ -528,10 +528,10 @@ class WirelessNetwork:
         statusbar.SetStatusText('Attempts: %d' % self.stats.attempts, 1)
         statusbar.SetStatusText('Success: %d' % self.stats.success, 2)
 #        statusbar.SetStatusText('Collisions: %d' % self.stats.collisions, 3)
-	if self.time > 0: 
-	    u = 1.0*self.stats.success*self.config.ptime/self.time
-	else: 
-	    u = 0.00
+        if self.time > 0: 
+            u = 1.0*self.stats.success*self.config.ptime/self.time
+        else: 
+            u = 0.00
         statusbar.SetStatusText('Utilization: %.2f' % u, 3)
         statusbar.SetStatusText('Status: %s' % msg, 4)
 
@@ -666,9 +666,9 @@ class NetPanel(wx.Panel):
 
     def OnStep(self,event):
         button = event.GetEventObject().GetLabel()
-	arg = button[button.find(' '):]
-	if arg == ' all': count = self.network.config.simtime-self.network.time
-	else: count = int(arg)
+        arg = button[button.find(' '):]
+        if arg == ' all': count = self.network.config.simtime-self.network.time
+        else: count = int(arg)
         self.network.step(count=count)
         self.network.status(self.statusbar,(-10,-10))
         self.redraw = True
@@ -710,29 +710,29 @@ class NetPanel(wx.Panel):
         self.redraw = True
 
     def OnBackoff(self,event):
-	backoff = event.GetEventObject().GetStringSelection()
-	self.network.config.set_backoff(backoff)
-	self.redraw = True
+        backoff = event.GetEventObject().GetStringSelection()
+        self.network.config.set_backoff(backoff)
+        self.redraw = True
 
     def OnSkew(self,event):
-	skew = event.GetEventObject().GetStringSelection()
-	self.network.config.set_skew(skew)
-	self.redraw = True
+        skew = event.GetEventObject().GetStringSelection()
+        self.network.config.set_skew(skew)
+        self.redraw = True
 
     def OnQMax(self,event):
-	qmax = event.GetEventObject().GetValue()
-	self.network.config.set_qmax(qmax)
-	self.redraw = True
+        qmax = event.GetEventObject().GetValue()
+        self.network.config.set_qmax(qmax)
+        self.redraw = True
 
     def OnDownlink(self,event):
-	downlink = event.GetEventObject().GetStringSelection()
-	self.network.config.set_downlink(downlink)
-	self.redraw = True
+        downlink = event.GetEventObject().GetStringSelection()
+        self.network.config.set_downlink(downlink)
+        self.redraw = True
 
     def OnExit(self,event):
         self.network.status(self.statusbar,(-10,-10))
         self.redraw = True
-	sys.exit(1)
+        sys.exit(1)
 
     def DrawNetwork(self):
         # erase buffer
@@ -778,7 +778,7 @@ class NetFrame(wx.Frame):
         self.Bind(wx.EVT_SPINCTRL,self.netpanel.OnNNodes,self.nNodes)
         psizer.Add(self.nNodes,0)
 
-	# offered load
+        # offered load
         psizer.Add(wx.StaticText(parameters,-1,'Load % (pkts/slot):'),
                    0,wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)
         self.load = wx.SpinCtrl(parameters,-1,min=0,max=1000,initial=100)
@@ -815,39 +815,39 @@ class NetFrame(wx.Frame):
         self.Bind(wx.EVT_CHOICE,self.netpanel.OnRetry,self.retry)
         psizer.Add(self.retry,0)
 
-	# type of backoff on collision and retry
-	psizer.Add(wx.StaticText(parameters,-1,'Backoff'),
-		   0,wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)
-	backoff_choices = ['None','Binexpo']
-	self.backoff = wx.Choice(parameters,-1,choices=backoff_choices)
-	self.Bind(wx.EVT_CHOICE,self.netpanel.OnBackoff,self.backoff)
-	psizer.Add(self.backoff,0)
-
- 	# source skew
-	psizer.Add(wx.StaticText(parameters,-1,'Src skew?'),
+        # type of backoff on collision and retry
+        psizer.Add(wx.StaticText(parameters,-1,'Backoff'),
                    0,wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)
-	skew_choices = ['No','Yes']
-	self.skew = wx.Choice(parameters,-1,choices=skew_choices)
+        backoff_choices = ['None','Binexpo']
+        self.backoff = wx.Choice(parameters,-1,choices=backoff_choices)
+        self.Bind(wx.EVT_CHOICE,self.netpanel.OnBackoff,self.backoff)
+        psizer.Add(self.backoff,0)
+
+        # source skew
+        psizer.Add(wx.StaticText(parameters,-1,'Src skew?'),
+                   0,wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)
+        skew_choices = ['No','Yes']
+        self.skew = wx.Choice(parameters,-1,choices=skew_choices)
         self.Bind(wx.EVT_CHOICE,self.netpanel.OnSkew,self.skew)
-	psizer.Add(self.skew,0)
+        psizer.Add(self.skew,0)
 
         # No downlink in lab8
         '''
-	# maximum per-node queue size
+        # maximum per-node queue size
         psizer.Add(wx.StaticText(parameters,-1,'Max Q (-1 for no limit):'),
                    0,wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)
         self.qmax = wx.SpinCtrl(parameters,-1,min=0,max=10000,initial=0)
         self.Bind(wx.EVT_SPINCTRL,self.netpanel.OnQMax,self.qmax)
         psizer.Add(self.qmax,0)
 
- 	# downlink parameters start here
+        # downlink parameters start here
         # Scheduling method: FIFO, RoundRobin variants
-	psizer.Add(wx.StaticText(parameters,-1,'Downlink scheduler'),
+        psizer.Add(wx.StaticText(parameters,-1,'Downlink scheduler'),
                    0,wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)
-	downlink_choices = ['FIFO','RoundRobin','StickyRR']
-	self.downlink = wx.Choice(parameters,-1,choices=downlink_choices)
+        downlink_choices = ['FIFO','RoundRobin','StickyRR']
+        self.downlink = wx.Choice(parameters,-1,choices=downlink_choices)
         self.Bind(wx.EVT_CHOICE,self.netpanel.OnDownlink,self.downlink)
-	psizer.Add(self.downlink,0)
+        psizer.Add(self.downlink,0)
         '''
 
         # holds netpanel and simulation controls
@@ -903,14 +903,14 @@ class NetFrame(wx.Frame):
         self.netpanel.SetNetwork(network)
 #        network.config.set_nodes(self.nNodes.GetValue())
 #        network.config.set_packet_time(self.packetTime.GetValue())
-#	network.config.set_load(self.load.GetValue())
-#	network.config.set_sim_time(self.simTime.GetValue())
+#       network.config.set_load(self.load.GetValue())
+#       network.config.set_sim_time(self.simTime.GetValue())
 #        network.config.set_channel_type(self.cType.GetStringSelection())
-#	network.config.set_retry(self.retry.GetStringSelection())
-#	network.config.set_backoff(self.backoff.GetStringSelection())
-#	network.config.set_skew(self.skew.GetStringSelection())
-#	network.config.set_qmax(self.qmax.GetValue())
-#	network.config.set_downlink(self.downlink.GetStringSelection())
+#       network.config.set_retry(self.retry.GetStringSelection())
+#       network.config.set_backoff(self.backoff.GetStringSelection())
+#       network.config.set_skew(self.skew.GetStringSelection())
+#       network.config.set_qmax(self.qmax.GetValue())
+#       network.config.set_downlink(self.downlink.GetStringSelection())
 
 class NetSim(wx.App):
     def OnInit(self):
@@ -927,11 +927,11 @@ class NetSim(wx.App):
 # times, identity of sender, whether collision happened or not.
 class Packet:
     def __init__(self,starttime,sender,receiver=None,ptime=1):
-	self.start = starttime
-	self.sender = sender
+        self.start = starttime
+        self.sender = sender
         self.receiver = receiver
         self.ptime = ptime  # size of packet in time slots
-	self.end = -1		# will get initialized later when xmitting
+        self.end = -1           # will get initialized later when xmitting
         if receiver == None:
             self.coll_flag = NO_COLLISION
 
@@ -941,17 +941,17 @@ class Packet:
 #
 class Stats:
     def __init__(self,simtime):
-	self.reset(simtime)
+        self.reset(simtime)
 
     def reset(self,simtime):
-	self.simtime = simtime	# total simulation time
-	self.attempts = 0	# number of attempts by network or node
-	self.success = 0	# number that succeeded
-	self.collisions = 0	# number that failed (collided)
-	self.latency = 0     # average latency; most useful for a node
-	self.backoffs = 0    # number of backoffs; generally useful at a node
+        self.simtime = simtime  # total simulation time
+        self.attempts = 0       # number of attempts by network or node
+        self.success = 0        # number that succeeded
+        self.collisions = 0     # number that failed (collided)
+        self.latency = 0     # average latency; most useful for a node
+        self.backoffs = 0    # number of backoffs; generally useful at a node
         self.pending = 0     # only makes much sense at a node
-	self.numbackoffs = 0	# number of backoffs at node
+        self.numbackoffs = 0    # number of backoffs at node
         # downlink stats for a node
         self.downrecd = 0       # number of packets received on downlink to node
         self.downq = 0          # current length of downlink queue to a node
@@ -962,15 +962,15 @@ class Stats:
     # depends on whether we're printing it from the network or a node.  When 
     # it's a node, the "type" is the node ID, otherwise, it's 'net'
     def _print(self,time,ptime,type):
-	if time == 0: u = 0
-	else: u = (1.0*self.success*ptime)/time
-	if type == 'net':
-#	    print "Time %d attempts %d success %d coll %d util %.2f downloaded %d" % (time,self.attempts,self.success,self.collisions,u,self.downrecd)
-	    print "Time %d attempts %d success %d util %.2f" % (time,self.attempts,self.success,u)
-	else:
-#	    print "  Node %d attempts %d success %d coll %d lat %d backoffs %d downrecd %d" % (int(type), self.attempts, self.success, self.collisions, self.latency, self.numbackoffs, self.downrecd)
-#	    print "  Node %d attempts %d success %d coll %d lat %d" % (int(type), self.attempts, self.success, self.collisions, self.latency)
-	    print "  Node %d attempts %d success %d coll %d" % (int(type), self.attempts, self.success, self.collisions)
+        if time == 0: u = 0
+        else: u = (1.0*self.success*ptime)/time
+        if type == 'net':
+#           print "Time %d attempts %d success %d coll %d util %.2f downloaded %d" % (time,self.attempts,self.success,self.collisions,u,self.downrecd)
+            print "Time %d attempts %d success %d util %.2f" % (time,self.attempts,self.success,u)
+        else:
+#           print "  Node %d attempts %d success %d coll %d lat %d backoffs %d downrecd %d" % (int(type), self.attempts, self.success, self.collisions, self.latency, self.numbackoffs, self.downrecd)
+#           print "  Node %d attempts %d success %d coll %d lat %d" % (int(type), self.attempts, self.success, self.collisions, self.latency)
+            print "  Node %d attempts %d success %d coll %d" % (int(type), self.attempts, self.success, self.collisions)
 
 ##########################################################################
 # Plot scatter plot of successful transmissions and collisions.
