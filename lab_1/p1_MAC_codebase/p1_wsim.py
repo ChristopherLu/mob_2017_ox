@@ -108,7 +108,7 @@ class WirelessNode:
             self.stats.collisions += 1
             # Note: For TDMA, don't remove packet (shd never happen)
             if (self.retry == NO_RETRY and
-                self.network.config.chantype != 'TDMA'):
+                    self.network.config.chantype != 'TDMA'):
                 self.transmit_queue.remove(packet)
             self.on_collision(packet)
         else:
@@ -977,36 +977,36 @@ class Stats:
 # Plot bar graph of per-node throughput (# successful transmissions)
 ##########################################################################
 def plot_data(wnet):
-        succ = []
-        x = []
-        y = []
-        xcoll = []
-        ycoll = []
-        for node in wnet.nlist:
-            succ.append(node.stats.success)
-            y = y + [node.get_id()] * len(node.sent)
-            x = x + node.sent
-            ycoll = ycoll + [node.get_id()] * len(node.coll)
-            xcoll = xcoll + node.coll
-        p.subplots_adjust(hspace = 0.1)
-        p.subplot(2, 1, 1)
-        p.ylabel('Node (blue=success; red=collision)')
-        p.xlabel('Time sent')
-        if x != [] and y != []:
-            p.scatter(x, y, c='b')
-        if xcoll != [] and ycoll != []:
-            ycoll = numpy.array(ycoll)
-            p.scatter(xcoll, ycoll-0.4, c='r')
-        p.xlim(0, wnet.time)
-        p.ylim(-1, len(wnet.nlist)-.5)
+    succ = []
+    x = []
+    y = []
+    xcoll = []
+    ycoll = []
+    for node in wnet.nlist:
+        succ.append(node.stats.success)
+        y = y + [node.get_id()] * len(node.sent)
+        x = x + node.sent
+        ycoll = ycoll + [node.get_id()] * len(node.coll)
+        xcoll = xcoll + node.coll
+    p.subplots_adjust(hspace = 0.1)
+    p.subplot(2, 1, 1)
+    p.ylabel('Node (blue=success; red=collision)')
+    p.xlabel('Time sent')
+    if x != [] and y != []:
+        p.scatter(x, y, c='b')
+    if xcoll != [] and ycoll != []:
+        ycoll = numpy.array(ycoll)
+        p.scatter(xcoll, ycoll-0.4, c='r')
+    p.xlim(0, wnet.time)
+    p.ylim(-1, len(wnet.nlist)-.5)
 
-        ax = p.subplot(2, 1, 2)
-        ind = numpy.arange(len(wnet.nlist))
-        width = 0.35
-        p.bar(ind, succ, width, color = 'g')
-        p.ylabel('# successful receptions')
-        p.xlabel('Node #')
-        p.xlim(-.25, len(wnet.nlist)-.25)
-        ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
+    ax = p.subplot(2, 1, 2)
+    ind = numpy.arange(len(wnet.nlist))
+    width = 0.35
+    p.bar(ind, succ, width, color = 'g')
+    p.ylabel('# successful receptions')
+    p.xlabel('Node #')
+    p.xlim(-.25, len(wnet.nlist)-.25)
+    ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
 
-        p.show()
+    p.show()
